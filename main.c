@@ -4,14 +4,13 @@
 #include <ctype.h>
 
 void displayBoard(wchar_t board[8][8]);
-void moveChoice(wchar_t board[8][8]);
+int moveChoice(wchar_t board[8][8]);
 int checkIfMoveOnBoard(char mF1, char mFA, char mT1, char mTA);
-int pieceChosen(char fromA, char from1, wchar_t board[8][8]);
+int pieceChosen(char fromX, char fromY, wchar_t board[8][8]);
 void convertToCo(char originalMoveList[4], int newMoveList[4]);
 
 
 int turnCounter = 0;
-int inCheck = 0;
 
 int main(void){
 
@@ -52,18 +51,18 @@ void displayBoard(wchar_t board[8][8]){
     return;
 }
 
-void moveChoice(wchar_t board[8][8]){
+int moveChoice(wchar_t board[8][8]){
     char moveFromA, moveFrom1, moveToA, moveTo1;
     int validMove = 0;
 
     while (!validMove){
         if (turnCounter % 2==0){
-            wprintf(L"White Choose A Move In The Format A2 A3: ");
+            wprintf(L"White Choose A Move (e.g A2 A3): ");
             scanf(" %c %c %c %c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
         }
         else{
-            wprintf(L"Black Choose A Move In The Format A2 A3: ");
-            scanf(" %c%c %c%c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
+            wprintf(L"Black Choose A Move (e.g A2 A3): ");
+            scanf(" %c %c %c %c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
         }
 
         /* Checking if move is valid before anything happens with the move choices */
@@ -92,9 +91,10 @@ void moveChoice(wchar_t board[8][8]){
         toX = newCo[2];
         toY = newCo[3];
 
+
         /* Check if there is a piece on the chosen square */
 
-        if(!pieceChosen(moveFromA, moveFrom1, board)){
+        if(!pieceChosen(fromX, fromY, board)){
             wprintf(L"No piece chosen\n");
             continue;
         }
@@ -102,11 +102,10 @@ void moveChoice(wchar_t board[8][8]){
         /* Repeat what was done above with different kinds of checks (will take a long time) */
 
 
-        /* Move is valid */
-        validMove = 1;
+
     }
     
-    return;
+    return 1;
 }
 
 /* Checks if user inputted squares are on the board */
@@ -131,8 +130,13 @@ int checkIfMoveOnBoard(char mF1, char mFA, char mT1, char mTA){
         }
 }
 
-int pieceChosen(char fromA, char from1, wchar_t board[8][8]){
-    return 1;
+int pieceChosen(char fromX, char fromY, wchar_t board[8][8]){
+    if (board[fromX][fromY] == '-'){
+        return 0;
+    }
+    else{
+        return 1;
+    }
 }
 
 void convertToCo(char originalMoveList[4],int newMoveList[4]){
