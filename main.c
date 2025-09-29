@@ -7,7 +7,7 @@ void displayBoard(wchar_t board[8][8]);
 void moveChoice(wchar_t board[8][8]);
 int checkIfMoveOnBoard(char mF1, char mFA, char mT1, char mTA);
 int pieceChosen(char fromA, char from1, wchar_t board[8][8]);
-void convertToCo(char originalMoveList[4], char newMoveList[4]);
+void convertToCo(char originalMoveList[4], int newMoveList[4]);
 
 
 int turnCounter = 0;
@@ -83,9 +83,14 @@ void moveChoice(wchar_t board[8][8]){
 
         /* Convert back from list to singular co-ordinates */
         char originalCo[4] = {moveFrom1, moveFromA, moveTo1, moveToA};
-        char newCo[4];
+        int newCo[4];
         convertToCo(originalCo, newCo);
 
+        int fromX, fromY, toX, toY;
+        fromX = newCo[0];
+        fromY = newCo[1];
+        toX = newCo[2];
+        toY = newCo[3];
 
         /* Check if there is a piece on the chosen square */
 
@@ -130,7 +135,7 @@ int pieceChosen(char fromA, char from1, wchar_t board[8][8]){
     return 1;
 }
 
-void convertToCo(char originalMoveList[4],char newMoveList[4]){
+void convertToCo(char originalMoveList[4],int newMoveList[4]){
     char rowIF, columnIF, rowOF, columnOF, rowIT, columnIT, rowOT, columnOT;
 
     for (int i = 0; i < 4; i++){
@@ -158,10 +163,16 @@ void convertToCo(char originalMoveList[4],char newMoveList[4]){
     rowIT = originalMoveList[2];
     columnIT = originalMoveList[3];
 
-    wprintf(L"%d\n", columnIF);
-    wprintf(L"%d\n", rowIF);
-    wprintf(L"%d\n", columnIT);
-    wprintf(L"%d\n", rowIT);
 
-    //rowOF = 
+
+    rowOF =  7 - rowIF;
+    columnOF = columnIF;
+    rowOT = 7 - rowIT;
+    columnOT = columnIT;
+
+    newMoveList[0] = rowOF;
+    newMoveList[1] = columnOF;
+    newMoveList[2] = rowOT;
+    newMoveList[3] = columnOT;
+    
 }
