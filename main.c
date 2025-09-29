@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include <wchar.h>
+#include <ctype.h>
 
 void displayBoard(wchar_t board[8][8]);
 void moveChoice(wchar_t board[8][8]);
@@ -132,16 +133,35 @@ int pieceChosen(char fromA, char from1, wchar_t board[8][8]){
 void convertToCo(char originalMoveList[4],char newMoveList[4]){
     char rowIF, columnIF, rowOF, columnOF, rowIT, columnIT, rowOT, columnOT;
 
+    for (int i = 0; i < 4; i++){
+        if (originalMoveList[i] == 'A'){originalMoveList[i] = 1;}
+        else if (originalMoveList[i] == 'B'){originalMoveList[i] = 2;}
+        else if (originalMoveList[i] == 'C'){originalMoveList[i] = 3;}
+        else if (originalMoveList[i] == 'D'){originalMoveList[i] = 4;}
+        else if (originalMoveList[i] == 'E'){originalMoveList[i] = 5;}
+        else if (originalMoveList[i] == 'F'){originalMoveList[i] = 6;}
+        else if (originalMoveList[i] == 'G'){originalMoveList[i] = 7;}
+        else if (originalMoveList[i] == 'H'){originalMoveList[i] = 8;}
+    }
+
+    
+    for (int i = 0; i < 4; i++){
+        if (isdigit(originalMoveList[i])){
+            originalMoveList[i] = originalMoveList[i] - '0';
+        }
+        originalMoveList[i]--;
+    }
+    
 
     rowIF = originalMoveList[0];
     columnIF = originalMoveList[1];
     rowIT = originalMoveList[2];
     columnIT = originalMoveList[3];
 
-    wprintf(L"%c\n", columnIF);
-    wprintf(L"%c\n", rowIF);
-    wprintf(L"%c\n", columnIT);
-    wprintf(L"%c\n", rowIT);
+    wprintf(L"%d\n", columnIF);
+    wprintf(L"%d\n", rowIF);
+    wprintf(L"%d\n", columnIT);
+    wprintf(L"%d\n", rowIT);
 
     //rowOF = 
 }
