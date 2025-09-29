@@ -1,0 +1,31 @@
+rough ideas:
+
+2 functions: white move
+             black move
+
+a global counter makes white move when it is even and black when odd, it is incremented every time someone moves and allows end data of amount of moves
+8 rows that have 8 items each, empty spaces are #
+
+can either do gui with clicks or figure out chess notation in cli
+
+need oop of possible moves and mabye even list them to the player if they choose a piece
+^can be done through if statements e.g for knight check all squares and you can move if no tm8 on them
+
+only check for checks after move in order to make logic for blocking easier. e.g if white is in check, makes a move and is not in check, then all is good...
+.., if they make a move and after it are in check, dont let them make it. See if mate can be automatic but if not make it manual
+
+code one piece at a time, start with pawn cause it is easy
+
+can check if squares are empty by checking in their content == "#" since that marks empty squares
+
+use many functions to avoid repeating. E.g take(withWhat, whatGetsTaken) and tell it to replace the secodn with the first - first.position = second.position or something
+
+use arrays to make an 8x8 grid and use math to figure out what diagonal is or knigths(do them last)
+
+check logic will be hard so leave it for last
+
+it might be hard to use color in cli, but in taking code you can have a list of white/black positions...
+...and append/remove those positions if pieces of those colours stand there and check that list...
+...to see if the thing on that space can be taken by a certain colour
+
+Learn and use structs for this project!!!!
