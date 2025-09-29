@@ -10,6 +10,7 @@ int pieceChosen(char fromX, char fromY, wchar_t board[8][8]);
 void convertToCo(char originalMoveList[4], int newMoveList[4]);
 int takingOwnPiece(int toX, int toY, wchar_t board[8][8]);
 int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]);
+int differentSquaresChosen(int fromX, int fromY, int toX, int toY);
 
 
 int turnCounter = 0;
@@ -47,7 +48,7 @@ void displayBoard(wchar_t board[8][8]){
         for (int j=0; j < 8; j++){
             wprintf(L"   %lc", board[i][j]);
         }
-        wprintf(L"\n");
+        wprintf(L"   %lc\n", lazyList[i]);
     }
     wprintf(L"    A   B   C   D   E   F   G   H\n");
     return;
@@ -67,6 +68,9 @@ int moveChoice(wchar_t board[8][8]){
             scanf(" %c %c %c %c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
         }
 
+        moveFromA = toupper(moveFromA);
+        moveToA = toupper(moveFromA);
+
         /* Checking if move is valid before anything happens with the move choices */
 
         /* First check is if the entered spaces even exist on the board */
@@ -76,23 +80,26 @@ int moveChoice(wchar_t board[8][8]){
             continue;
         }
 
-        /* Check if the same square is entered twice */
-
 
         /* Convert input to co-ordinates */
-
-
-        /* Convert back from list to singular co-ordinates */
         char originalCo[4] = {moveFrom1, moveFromA, moveTo1, moveToA};
         int newCo[4];
         convertToCo(originalCo, newCo);
 
+        /* Convert back from list to singular co-ordinates */
         int fromX, fromY, toX, toY;
         fromX = newCo[0];
         fromY = newCo[1];
         toX = newCo[2];
         toY = newCo[3];
 
+
+        /* Check if the same square is entered twice */
+
+        if (!differentSquaresChosen(fromX, fromY, toX, toY)){
+            wprintf(L"You have to move a piece\n");
+            continue;
+        }
 
         /* Check if there is a piece on the chosen square */
 
@@ -125,7 +132,8 @@ int moveChoice(wchar_t board[8][8]){
     return 1;
 }
 
-/* Checks if user inputted squares are on the board */
+
+
 int checkIfMoveOnBoard(char mF1, char mFA, char mT1, char mTA){
     char tilesA[8] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     char tiles1[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
@@ -195,18 +203,18 @@ void convertToCo(char originalMoveList[4],int newMoveList[4]){
     newMoveList[1] = columnOF;
     newMoveList[2] = rowOT;
     newMoveList[3] = columnOT;
+
+    return;
     
 }
 
 int takingOwnPiece(int toX, int toY, wchar_t board[8][8]){
-    int illegalMove = 0;
     //White move
     if (turnCounter % 2==0){
         wchar_t whitePieces[6] = {L'♟', L'♜', L'♞', L'♝', L'♛', L'♚'};
         for (int i=0; i < 6; i++){
             if (board[toX][toY] == whitePieces[i]){
-                illegalMove = 1;
-                break;
+                return 0;
             }
         }
     }
@@ -214,13 +222,15 @@ int takingOwnPiece(int toX, int toY, wchar_t board[8][8]){
         wchar_t blackPieces[6] = {L'♕', L'♔', L'♗', L'♘', L'♖', L'♙'};
         for (int i=0; i < 6; i++){
             if (board[toX][toY] == blackPieces[i]){
-                illegalMove = 1;
-                break;
+                return 0;
             }
         }
     }
+    return 1;
+}
 
-    if (illegalMove){
+int differentSquaresChosen(int fromX, int fromY, int toX, int toY){
+    if (fromX == toX && fromY && toY){
         return 0;
     }
     else{
@@ -229,14 +239,12 @@ int takingOwnPiece(int toX, int toY, wchar_t board[8][8]){
 }
 
 int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]){
-    int illegalMove = 0;
     //White move
     if (turnCounter % 2==0){
         wchar_t blackPieces[6] = {L'♕', L'♔', L'♗', L'♘', L'♖', L'♙'};
         for (int i=0; i < 6; i++){
             if (board[fromX][fromY] == blackPieces[i]){
-                illegalMove = 1;
-                break;
+                return 0;
             }
         }
     }
@@ -244,15 +252,9 @@ int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]){
         wchar_t whitePieces[6] = {L'♟', L'♜', L'♞', L'♝', L'♛', L'♚'};        
         for (int i=0; i < 6; i++){
             if (board[fromX][fromY] == whitePieces[i]){
-                illegalMove = 1;
-                break;
+                return 0;
             }
         }
     }
-    if (illegalMove){
-        return 0;
-    }
-    else{
-        return 1;
-    }
+    return 1;
 }
