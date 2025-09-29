@@ -11,6 +11,14 @@ void convertToCo(char originalMoveList[4], int newMoveList[4]);
 int takingOwnPiece(int toX, int toY, wchar_t board[8][8]);
 int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]);
 int differentSquaresChosen(int fromX, int fromY, int toX, int toY);
+char whichPiece(int x, int y, wchar_t board[8][8]);
+int ifMoveDoable(char piece, int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int queenMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
@@ -69,7 +77,7 @@ int moveChoice(wchar_t board[8][8]){
         }
 
         moveFromA = toupper(moveFromA);
-        moveToA = toupper(moveFromA);
+        moveToA = toupper(moveToA);
 
         /* Checking if move is valid before anything happens with the move choices */
 
@@ -122,9 +130,18 @@ int moveChoice(wchar_t board[8][8]){
             continue;
         }
 
+        /* See what piece is being moved */
+        char pieceChoice;
+        pieceChoice = whichPiece(fromX, fromY, board);
+
+        /* See if that piece can make the move */
+        if(!ifMoveDoable(pieceChoice, fromX, fromY, toX, toY, board)){
+            wprintf(L"You can't move there\n");
+            continue;
+        }
 
         /* Repeat what was done above with different kinds of checks (will take a long time) */
-
+        
 
         validMove = 1;
     }
@@ -257,4 +274,151 @@ int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]){
         }
     }
     return 1;
+}
+
+char whichPiece(int x, int y, wchar_t board[8][8]){
+    wchar_t piece = board[x][y];
+
+    if (piece == L'♟' || piece == L'♙'){return 'p';}
+    else if (piece == L'♜' || piece == L'♖'){return 'r';}
+    else if (piece == L'♞' || piece == L'♘'){return 'n';}
+    else if (piece == L'♛' || piece == L'♕'){return 'q';}
+    else if (piece == L'♗' || piece == L'♝'){return 'b';}
+    else{return 'k';}
+}
+
+int ifMoveDoable(char piece, int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    int illegalMove = 0;
+    switch (piece){
+        case 'p':
+            illegalMove = pawnMove(fromX, fromY, toX, toY, board);
+            break;
+        case 'q':
+            illegalMove = queenMove(fromX, fromY, toX, toY, board);
+            break;
+        case 'n':
+            illegalMove = knightMove(fromX, fromY, toX, toY, board);
+            break;
+        case 'b':
+            illegalMove = bishopMove(fromX, fromY, toX, toY, board);
+            break;
+        case 'r':
+            illegalMove = rookMove(fromX, fromY, toX, toY, board);
+            break;
+        default:
+            illegalMove = kingMove(fromX, fromY, toX, toY, board);
+            break;
+    }
+    if (illegalMove){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+}
+
+int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    int doubleJump = 1;
+    //If white's move
+    if(turnCounter % 2==0){
+        if(fromX != 6){
+            doubleJump = 0;
+        }
+        if(fromY == toY){
+            //Not trying to take anything
+            if(fromX - 2 > toX){
+                return 1;
+            }
+            else if(fromX -1 != toX && doubleJump == 0){
+                return 1;
+            }
+            else if(doubleJump == 1 && fromX -2 == toX){
+                //DoubleJumping
+                if (board[toX][toY] != '-' || board[fromX - 1][toY] != '-'){
+                    return 1;
+                }
+            }
+            else{
+                //Single Move
+                if (board[toX][toY] != '-'){
+                    return 1;
+                }
+            }
+        }
+        else{
+            //Trying to take/illegal move
+            if(((fromX - 1 == toX)&&(fromY-1 == toY))||((fromX - 1 == toX)&&(fromY + 1 == toY))){
+                if(board[toX][toY] != '-'){
+                    return 0;
+                }
+                else{
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
+    //Black's move
+    else{
+        if(fromX != 1){
+            doubleJump = 0;
+        }
+        if(fromY == toY){
+            //Not trying to take anything
+            if(fromX + 2 < toX){
+                return 1;
+            }
+            else if(fromX +1 != toX && doubleJump == 0){
+                return 1;
+            }
+            else if(doubleJump == 1 && fromX +2 == toX){
+                //DoubleJumping
+                if (board[toX][toY] != '-' || board[fromX + 1][toY] != '-'){
+                    return 1;
+                }
+            }
+            else{
+                //Single Move
+                if (board[toX][toY] != '-'){
+                    return 1;
+                }
+            }
+        }
+        else{
+            //Trying to take/illegal move
+            if(((fromX + 1 == toX)&&(fromY-1 == toY))||((fromX + 1 == toX)&&(fromY + 1 == toY))){
+                if(board[toX][toY] != '-'){
+                    return 0;
+                }
+                else{
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
+}
+
+int queenMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    return 0;
+}
+
+int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    return 0;
+
+}
+
+int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    return 0;
+
+}
+
+int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    return 0;
+
+}
+
+int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    return 0;
+
 }
