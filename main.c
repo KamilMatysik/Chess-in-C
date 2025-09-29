@@ -58,7 +58,7 @@ void moveChoice(wchar_t board[8][8]){
     while (!validMove){
         if (turnCounter % 2==0){
             wprintf(L"White Choose A Move In The Format A2 A3: ");
-            scanf(" %c%c %c%c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
+            scanf(" %c %c %c %c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
         }
         else{
             wprintf(L"Black Choose A Move In The Format A2 A3: ");
@@ -140,8 +140,8 @@ void convertToCo(char originalMoveList[4],char newMoveList[4]){
 
     wprintf(L"%c\n", columnIF);
     wprintf(L"%c\n", rowIF);
-    wprintf(L"%c\n", columnOF);
-    wprintf(L"%c\n", rowOF);
+    wprintf(L"%c\n", columnIT);
+    wprintf(L"%c\n", rowIT);
 
     //rowOF = 
 }
