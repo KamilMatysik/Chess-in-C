@@ -8,6 +8,8 @@ int moveChoice(wchar_t board[8][8]);
 int checkIfMoveOnBoard(char mF1, char mFA, char mT1, char mTA);
 int pieceChosen(char fromX, char fromY, wchar_t board[8][8]);
 void convertToCo(char originalMoveList[4], int newMoveList[4]);
+int takingOwnPiece(int toX, int toY, wchar_t board[8][8]);
+int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
@@ -99,10 +101,25 @@ int moveChoice(wchar_t board[8][8]){
             continue;
         }
 
+        /* Check is a piece of yours is on the square you are moving to */
+
+        if(!takingOwnPiece(toX, toY, board)){
+            wprintf(L"You cannot take your own piece\n");
+            continue;
+        }
+
+        /* Check if you own the piece you are moving */
+
+        if(!ownsPieceMoving(fromX, fromY, board)){
+            wprintf(L"You dont own the piece you are moving\n");
+            continue;
+        }
+
+
         /* Repeat what was done above with different kinds of checks (will take a long time) */
 
 
-
+        validMove = 1;
     }
     
     return 1;
@@ -179,4 +196,63 @@ void convertToCo(char originalMoveList[4],int newMoveList[4]){
     newMoveList[2] = rowOT;
     newMoveList[3] = columnOT;
     
+}
+
+int takingOwnPiece(int toX, int toY, wchar_t board[8][8]){
+    int illegalMove = 0;
+    //White move
+    if (turnCounter % 2==0){
+        wchar_t whitePieces[6] = {L'♟', L'♜', L'♞', L'♝', L'♛', L'♚'};
+        for (int i=0; i < 6; i++){
+            if (board[toX][toY] == whitePieces[i]){
+                illegalMove = 1;
+                break;
+            }
+        }
+    }
+    else{
+        wchar_t blackPieces[6] = {L'♕', L'♔', L'♗', L'♘', L'♖', L'♙'};
+        for (int i=0; i < 6; i++){
+            if (board[toX][toY] == blackPieces[i]){
+                illegalMove = 1;
+                break;
+            }
+        }
+    }
+
+    if (illegalMove){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+}
+
+int ownsPieceMoving(int fromX, int fromY, wchar_t board[8][8]){
+    int illegalMove = 0;
+    //White move
+    if (turnCounter % 2==0){
+        wchar_t blackPieces[6] = {L'♕', L'♔', L'♗', L'♘', L'♖', L'♙'};
+        for (int i=0; i < 6; i++){
+            if (board[fromX][fromY] == blackPieces[i]){
+                illegalMove = 1;
+                break;
+            }
+        }
+    }
+    else{
+        wchar_t whitePieces[6] = {L'♟', L'♜', L'♞', L'♝', L'♛', L'♚'};        
+        for (int i=0; i < 6; i++){
+            if (board[fromX][fromY] == whitePieces[i]){
+                illegalMove = 1;
+                break;
+            }
+        }
+    }
+    if (illegalMove){
+        return 0;
+    }
+    else{
+        return 1;
+    }
 }
