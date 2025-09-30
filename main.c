@@ -35,9 +35,9 @@ int main(void){
         {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
         {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'♙', L'-', L'♜', L'♙', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'♝', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'♙', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
         {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
     };
@@ -318,7 +318,7 @@ int ifMoveDoable(char piece, int fromX, int fromY, int toX, int toY, wchar_t boa
     }
 }
 
-//Finished
+//Working
 int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     int doubleJump = 1;
     //If white's move
@@ -405,7 +405,7 @@ int queenMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     return 0;
 }
 
-
+//Working
 int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     //Have to test the 8 possible moves for a knight
     if (((fromX -2 == toX)&&(fromY -1 == toY)) || ((fromX -2 == toX)&&(fromY +1 == toY)) || ((fromX -1 == toX)&&(fromY -2 == toY)) || ((fromX -1 == toX)&&(fromY +2 == toY)) || ((fromX +1 == toX)&&(fromY -2 == toY)) || ((fromX +1 == toX)&&(fromY +2 == toY) || (fromX +2 == toX)&&(fromY -1 == toY)) || ((fromX +2 == toX)&&(fromY +1 == toY))){
@@ -418,8 +418,17 @@ int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 }
 
 int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    if(fromX == toX || fromY == toY){
+        return 1;
+    }
+    int distMoved = abs(fromX - toX);
+    //Ensuring it moves diagonally
+    if ((abs(fromX - toX)) != (abs(fromY - toY))){
+        return 1;
+    }
+    
+    
     return 0;
-
 }
 
 //Working
