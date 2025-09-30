@@ -35,7 +35,7 @@ int main(void){
         {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
         {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'♝', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'♛', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
@@ -401,7 +401,94 @@ int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     }
 }
 
+//Working but all code copied from bishop and rook so MESSY 
 int queenMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    //Queen must either move diagonally or be in the same row or column
+    if (((abs(fromX - toX)) != (abs(fromY - toY))) && (fromX != toX && fromY != toY)){
+        return 1;
+    }
+    int xMoves = abs(fromX - toX);
+    int yMoves = abs(fromY - toY);
+    int movingLeft = 0;
+    int movingUp = 0;
+
+    if (fromY > toY){movingLeft = 1;}
+    if (fromX == toX){
+        //she is moving horiz (on board)
+        for(int i = 1; i < yMoves; i++){
+            if(movingLeft){
+                if (board[fromX][fromY -i] != '-'){
+                    return 1;
+                }
+            }
+            else{
+                if (board[fromX][fromY +i] != '-'){
+                    return 1;
+                }
+            }
+        }
+    }
+    if (toX > fromX){movingUp = 1;}
+    else if (fromY == toY){
+        //she is moving vert(on board)
+        for(int i = 1; i < xMoves; i++){
+            if(movingUp){
+                if (board[fromX + i][fromY] != '-'){
+                    return 1;
+                }
+            }
+            else{
+                if (board[fromX -i][fromY] != '-'){
+                    return 1;
+                }
+            }
+        }
+    }
+    else{
+        //she must be moving diag
+        //all this imported from bishop (should work)
+        int dir;
+        int distMoved = abs(fromX - toX);
+        if((fromX > toX) && (fromY > toY)){
+        //bottom left
+        dir = 3;
+    }
+    else if((fromX < toX) && (fromY > toY)){
+        //bottom right
+        dir = 4;
+    }
+    else if((fromX > toX) && (fromY < toY)){
+        //top left
+        dir = 2;
+    }
+    else{
+        //top right
+        dir = 1;
+    }
+
+    //Correct Loop
+    for(int i = 1; i < distMoved; i++){
+        switch (dir)
+        {
+        //tr
+        case 1:
+            if(board[fromX+i][fromY+i] != '-'){return 1;}
+            break;
+        //tl
+        case 2:
+            if(board[fromX-i][fromY+i] != '-'){return 1;}
+            break;
+        //bl
+        case 3:
+            if(board[fromX-i][fromY-i] != '-'){return 1;}
+            break; 
+        //br    
+        default:
+            if(board[fromX+i][fromY-i] != '-'){return 1;}
+            break;
+        }
+    }
+    }
     return 0;
 }
 
