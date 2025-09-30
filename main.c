@@ -34,9 +34,9 @@ int main(void){
         {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
         {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'♙', L'-', L'♜', L'♙', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'♙', L'-', L'-', L'-', L'-'},
         {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
         {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
     };
@@ -247,7 +247,7 @@ int takingOwnPiece(int toX, int toY, wchar_t board[8][8]){
 }
 
 int differentSquaresChosen(int fromX, int fromY, int toX, int toY){
-    if (fromX == toX && fromY && toY){
+    if (fromX == toX && fromY == toY){
         return 0;
     }
     else{
@@ -317,6 +317,7 @@ int ifMoveDoable(char piece, int fromX, int fromY, int toX, int toY, wchar_t boa
     }
 }
 
+//Finished
 int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     int doubleJump = 1;
     //If white's move
@@ -403,8 +404,15 @@ int queenMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     return 0;
 }
 
+
 int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    //Have to test the 8 possible moves for a knight
+    if (((fromX -2 == toX)&&(fromY -1 == toY)) || ((fromX -2 == toX)&&(fromY +1 == toY)) || ((fromX -1 == toX)&&(fromY -2 == toY)) || ((fromX -1 == toX)&&(fromY +2 == toY)) || ((fromX +1 == toX)&&(fromY -2 == toY)) || ((fromX +1 == toX)&&(fromY +2 == toY) || (fromX +2 == toX)&&(fromY -1 == toY)) || ((fromX +2 == toX)&&(fromY +1 == toY))){
     return 0;
+    }
+    else{
+        return 1;
+    }
 
 }
 
@@ -414,8 +422,13 @@ int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 }
 
 int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    int somethingInWay = 0;
+    if(fromX != toX && fromY != toY){
+        return 1;
+    }
+    
+    
     return 0;
-
 }
 
 int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
