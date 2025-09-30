@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <locale.h>
 #include <wchar.h>
 #include <ctype.h>
@@ -421,12 +422,51 @@ int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 
 }
 
+//Working
 int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
-    int somethingInWay = 0;
     if(fromX != toX && fromY != toY){
         return 1;
     }
-    
+    /* Pseudo: I want to scan every square between from and to, excluding the actual co-ordinates. I need a for loop that increments from the greater of the two towards
+    the smaller (order doesnt really matter) and if anything is found between them, then return 1;  */
+    int xMoves = abs(fromX - toX);
+    int yMoves = abs(fromY - toY);
+    int movingLeft = 0;
+    int movingUp = 0;
+
+    //Side to side
+    if (fromY > toY){movingLeft = 1;}
+    if(fromX == toX){  
+        for(int i = 1; i < yMoves; i++){
+            if(movingLeft){
+                if (board[fromX][fromY -i] != '-'){
+                    return 1;
+                }
+            }
+            else{
+                if (board[fromX][fromY +i] != '-'){
+                    return 1;
+                }
+            }
+        }
+    }
+    //Up and Down
+    if (toX > fromX){movingUp = 1;}
+    else if(fromY == toY){
+        for(int i = 1; i < xMoves; i++){
+            if(movingUp){
+                if (board[fromX + i][fromY] != '-'){
+                    return 1;
+                }
+            }
+            else{
+                if (board[fromX -i][fromY] != '-'){
+                    return 1;
+                }
+            }
+        }
+    }
+
     
     return 0;
 }
