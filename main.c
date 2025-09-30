@@ -417,7 +417,9 @@ int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 
 }
 
+//Working
 int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    int dir;
     if(fromX == toX || fromY == toY){
         return 1;
     }
@@ -426,7 +428,48 @@ int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if ((abs(fromX - toX)) != (abs(fromY - toY))){
         return 1;
     }
-    
+
+    //Finding direction
+    if((fromX > toX) && (fromY > toY)){
+        //bottom left
+        dir = 3;
+    }
+    else if((fromX < toX) && (fromY > toY)){
+        //bottom right
+        dir = 4;
+    }
+    else if((fromX > toX) && (fromY < toY)){
+        //top left
+        dir = 2;
+    }
+    else{
+        //top right
+        dir = 1;
+    }
+
+    //Correct Loop
+    for(int i = 1; i < distMoved; i++){
+        switch (dir)
+        {
+        //tr
+        case 1:
+            if(board[fromX+i][fromY+i] != '-'){return 1;}
+            break;
+        //tl
+        case 2:
+            if(board[fromX-i][fromY+i] != '-'){return 1;}
+            break;
+        //bl
+        case 3:
+            if(board[fromX-i][fromY-i] != '-'){return 1;}
+            break; 
+        //br    
+        default:
+            if(board[fromX+i][fromY-i] != '-'){return 1;}
+            break;
+        }
+    }
+
     
     return 0;
 }
@@ -436,8 +479,7 @@ int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if(fromX != toX && fromY != toY){
         return 1;
     }
-    /* Pseudo: I want to scan every square between from and to, excluding the actual co-ordinates. I need a for loop that increments from the greater of the two towards
-    the smaller (order doesnt really matter) and if anything is found between them, then return 1;  */
+
     int xMoves = abs(fromX - toX);
     int yMoves = abs(fromY - toY);
     int movingLeft = 0;
