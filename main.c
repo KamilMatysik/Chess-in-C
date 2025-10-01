@@ -1,3 +1,6 @@
+//small things to implement at end: en pessant, cant castle with a rook if that rook has moves, even if it is back to its square(idk how to do this yet)
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -23,6 +26,7 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
+int canCastle = 1;
 
 int main(void){
 
@@ -141,7 +145,7 @@ int moveChoice(wchar_t board[8][8]){
             continue;
         }
 
-        /* Repeat what was done above with different kinds of checks (will take a long time) */
+
         
 
         validMove = 1;
@@ -321,84 +325,67 @@ int ifMoveDoable(char piece, int fromX, int fromY, int toX, int toY, wchar_t boa
 //Working
 int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     int doubleJump = 1;
-    //If white's move
-    if(turnCounter % 2==0){
-        if(fromX != 6){
-            doubleJump = 0;
-        }
+
+    // White's move
+    if(turnCounter % 2 == 0){
+        if(fromX != 6){ doubleJump = 0; }
+
+        // Moving straight
         if(fromY == toY){
-            //Not trying to take anything
-            if(fromX - 2 > toX){
-                return 1;
+            if(fromX - 1 == toX){          
+                if(board[toX][toY] != '-') return 1;
+                return 0;
             }
-            else if(fromX -1 != toX && doubleJump == 0){
-                return 1;
-            }
-            else if(doubleJump == 1 && fromX -2 == toX){
-                //DoubleJumping
-                if (board[toX][toY] != '-' || board[fromX - 1][toY] != '-'){
-                    return 1;
-                }
+            else if(doubleJump && fromX - 2 == toX){  // Double jump
+                if(board[fromX - 1][toY] != '-' || board[toX][toY] != '-') return 1;
+                return 0;
             }
             else{
-                //Single Move
-                if (board[toX][toY] != '-'){
-                    return 1;
-                }
+                return 1;
             }
         }
         else{
-            //Trying to take/illegal move
-            if(((fromX - 1 == toX)&&(fromY-1 == toY))||((fromX - 1 == toX)&&(fromY + 1 == toY))){
-                if(board[toX][toY] != '-'){
-                    return 0;
-                }
-                else{
-                    return 1;
-                }
+            // Diagonal
+            if((fromX - 1 == toX) && (fromY - 1 == toY || fromY + 1 == toY)){
+                if(board[toX][toY] != '-') return 0; // Can capture
+                else return 1; // Cannot move diagonally to empty square
+            }
+            else{
+                return 1;
             }
         }
-        return 0;
     }
-    //Black's move
+    // Black's move
     else{
-        if(fromX != 1){
-            doubleJump = 0;
-        }
+        if(fromX != 1){ doubleJump = 0; }
+
+        // Moving straight
         if(fromY == toY){
-            //Not trying to take anything
-            if(fromX + 2 < toX){
-                return 1;
+            if(fromX + 1 == toX){    
+                if(board[toX][toY] != '-') return 1;
+                return 0;
             }
-            else if(fromX +1 != toX && doubleJump == 0){
-                return 1;
-            }
-            else if(doubleJump == 1 && fromX +2 == toX){
-                //DoubleJumping
-                if (board[toX][toY] != '-' || board[fromX + 1][toY] != '-'){
-                    return 1;
-                }
+            else if(doubleJump && fromX + 2 == toX){  // Double jump
+                if(board[fromX + 1][toY] != '-' || board[toX][toY] != '-') return 1;
+                return 0;
             }
             else{
-                //Single Move
-                if (board[toX][toY] != '-'){
-                    return 1;
-                }
+                return 1;
             }
         }
         else{
-            //Trying to take/illegal move
-            if(((fromX + 1 == toX)&&(fromY-1 == toY))||((fromX + 1 == toX)&&(fromY + 1 == toY))){
-                if(board[toX][toY] != '-'){
-                    return 0;
-                }
-                else{
-                    return 1;
-                }
+            // Diagonal 
+            if((fromX + 1 == toX) && (fromY - 1 == toY || fromY + 1 == toY)){
+                if(board[toX][toY] != '-') return 0; // Can capture
+                else return 1; // Cannot move diagonally to empty square
+            }
+            else{
+                return 1;
             }
         }
-        return 0;
     }
+
+    return 1;
 }
 
 //Working but all code copied from bishop and rook so MESSY 
@@ -610,6 +597,37 @@ int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 }
 
 int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
-    return 0;
+    if((abs(fromX - toX) > 1) || (abs(fromY - toY) >1)){
+        if(!canCastle){return 1;}
+        if(turnCounter % 2 == 0){
+            //white castlable squares
+            if(toX != 7){return 1;}
+            if(toY != 2 || toY != 6){return 1;}
+        }
+        else if(turnCounter % 2 != 0){
+            //black castleable squares
+            if(toX != 0){return 1;}
+            if(toY != 2 || toY != 6){return 1;}
+        }
+        else{
+            //Must be castleing?
+            /*Need to check the rook he is castling with, and make sure it has not moved yet
+            Assign variable to each rook and make it false when it moves at all
+            Next index each square between king and rook (inclusive of king but not rook)
+            From each square check if there is a rook or queen above it
+            If there is a bishop or queen diagonal
+            Any piece in the row above each index(opposite color)
+            And finally for knights(you can hard code the squares for each castle as it would not change)
+            (for each of these other than rook, go square by square until the first piece, if it is anything other than ones that can check ,return safe)*/
+            
 
+
+        }
+        return 0;
+    }
+
+    
+
+    canCastle = 0;
+    return 0;
 }
