@@ -1,4 +1,4 @@
-//small things to implement at end: en pessant, promotion, universal check
+//small things to implement at end: en pessant, promotion, universal check ENPESSANT CHECK => IDK HOW
 // delete all these at end - only for error testing   /*Test print*/wprintf(L"
 
 #include <stdio.h>
@@ -23,6 +23,9 @@ int knightMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 int bishopMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+void movePiecesToCastle(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+int checkForCheck(int x, int y, wchar_t board[8][8]);
+int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
@@ -32,6 +35,8 @@ int WLrook = 1;
 int WRrook = 1;
 int BLrook = 1;
 int BRrook = 1;
+int whiteCastledThisTurn = 0;
+int blackCastledThisTurn = 0;
 
 int main(void){
 
@@ -53,8 +58,9 @@ int main(void){
 
     displayBoard(chessboard);
 
-    moveChoice(chessboard);
-
+    while(1){
+        moveChoice(chessboard);
+    }        
 
     return 0;
 }
@@ -152,8 +158,14 @@ int moveChoice(wchar_t board[8][8]){
 
 
         //Check if king is in check after move choice first
+        //Have to create a sandbox board where I make the move and then check if king would be in check, if yes dont let the move happen
+        if (checkAfterMove(fromX, fromY, toX, toY, board)){
+            wprintf(L"King in check\n");
+            continue;
+        }
 
         validMove = 1;
+        turnCounter ++;
     }
     
     return 1;
@@ -615,6 +627,7 @@ int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     return 0;
 }
 
+//Working (??)
 int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if((abs(fromX - toX) > 1) || (abs(fromY - toY) >1)){
         
@@ -651,6 +664,9 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             if (!WRrook){
                 return 1;
             }
+            if(checkForCheck(7, 6, board) || checkForCheck(7, 5, board)){
+                return 1;
+            }
         }
         else if (toX == 7 && toY == 2){
             //white long castle
@@ -659,6 +675,9 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
                 return 1;
             }
             if (!WLrook){
+                return 1;
+            }
+            if(checkForCheck(7, 1, board) || checkForCheck(7, 2, board) || checkForCheck(7, 3, board)){
                 return 1;
             }
         }
@@ -671,6 +690,9 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             if (!BRrook){
                 return 1;
             }
+            if(checkForCheck(0, 6, board) || checkForCheck(0, 5, board)){
+                return 1;
+            }
         }
         else if (toX == 0 && toY == 2){
             //black long castle
@@ -681,14 +703,13 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             if (!BLrook){
                 return 1;
             }
+            if(checkForCheck(0, 1, board) || checkForCheck(0, 2, board) || checkForCheck(0, 3, board)){
+                return 1;
+            }
         }
         else{
             wprintf(L"BIG ERROR, THIS SHOULD NOT BE POSSIBLE\n");
         }
-        
-    
-        
-        
         
         
         if(turnCounter % 2 == 0){
@@ -701,8 +722,9 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         
     }
 
-    
-
+    /*Call function that physcially moves the pieces to castle the king, and change a variable (one for each side) that tells that a side has castled this turn, let the move
+    function check this variable, and if it is true then it makes no moves as one has been made, otherwise go on as normal*/
+    movePiecesToCastle(fromX, fromY, toX, toY, board);
 
     return 0;
 }
@@ -916,12 +938,12 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
     //Pawns and Kings
 
     //KING
-    int xPossibilities[8] = {0, -1, -1, -1, 0, 1, 1, 1};
-    int yPossibilities[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
+    int xPossibilitiesK[8] = {0, -1, -1, -1, 0, 1, 1, 1};
+    int yPossibilitiesK[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 
     for(int i = 0; i<8; i++){
-        int testX = x + xPossibilities[i];
-        int testY = y + yPossibilities[i];
+        int testX = x + xPossibilitiesK[i];
+        int testY = y + yPossibilitiesK[i];
 
         if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
             continue;
@@ -940,12 +962,12 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
     }
     //PAWN
     if(turnCounter % 2 == 0){
-       int xPoss[2] = {-1, -1};
-       int yPoss[2] = {-1, 1};
+       int xPossibilitiesP[2] = {-1, -1};
+       int yPossibilitiesP[2] = {-1, 1};
        
        for(int i = 0; i<2; i++){
-        int testX = x + xPoss[i];
-        int testY = y + yPoss[i];
+        int testX = x + xPossibilitiesP[i];
+        int testY = y + yPossibilitiesP[i];
 
         if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
             continue;
@@ -957,12 +979,12 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
         }
     }
     else{
-       int xPoss[2] = {1, 1};
-       int yPoss[2] = {-1, 1};
+       int xPossibilitiesP[2] = {1, 1};
+       int yPossibilitiesP[2] = {-1, 1};
        
        for(int i = 0; i<2; i++){
-        int testX = x + xPoss[i];
-        int testY = y + yPoss[i];
+        int testX = x + xPossibilitiesP[i];
+        int testY = y + yPossibilitiesP[i];
 
         if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
             continue;
@@ -974,4 +996,82 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
         }
     }
     return 0;
+}
+
+void movePiecesToCastle(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    if (toX == 7 && toY == 6){
+            //white short castle
+            board[7][6] = L'♚';
+            board[7][4] = L'-';
+            board[7][5] = L'♜';
+            board[7][7] = L'-';
+            whiteCastledThisTurn = 1;
+        }
+        else if (toX == 7 && toY == 2){
+            //white long castle
+            board[7][2] = L'♚';
+            board[7][4] = L'-';
+            board[7][3] = L'♜';
+            board[7][0] = L'-';
+            whiteCastledThisTurn = 1;
+        }
+        else if (toX == 0 && toY == 6){
+            //black short castle
+            board[0][6] = L'♔';
+            board[0][4] = L'-';
+            board[0][5] = L'♖';
+            board[0][7] = L'-';
+            blackCastledThisTurn = 1;
+        }
+        else if (toX == 0 && toY == 2){
+            //black long castle
+            board[0][2] = L'♔';
+            board[0][4] = L'-';
+            board[0][3] = L'♖';
+            board[0][0] = L'-';
+            blackCastledThisTurn = 1;
+        }
+}
+
+void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    if (blackCastledThisTurn || whiteCastledThisTurn){
+        blackCastledThisTurn = 0;
+        whiteCastledThisTurn = 0;
+        return;
+    }
+
+    wchar_t pieceToMove = board[fromX][fromY];
+    board[toX][toY] = pieceToMove;
+    board[fromX][fromY] = L'-';
+    return;
+}
+
+int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    wchar_t sbBoard[8][8];
+    int kingX;
+    int kingY;
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            sbBoard[i][j] = board [i][j];
+            if (turnCounter % 2 == 0){
+                if (board[i][j] == L'♚'){
+                    kingX = i;
+                    kingY = j;
+                }
+            }
+            else{
+                if (board[i][j] == L'♔'){
+                    kingX = i;
+                    kingY = j;
+                }
+            }
+        }
+    }
+    movePieces(fromX, fromY, toX, toY, sbBoard);
+    if (checkForCheck(kingX, kingY, sbBoard)){
+        return 1;
+    }
+    else{
+        return 0;
+    }
 }
