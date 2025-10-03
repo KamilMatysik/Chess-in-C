@@ -710,7 +710,7 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 int checkForCheck(int x, int y, wchar_t board[8][8]){
 
     //1 is check
-    //2 is not in check
+    //0 is not in check
 
     //Divide into section per piece
     //Ensure not to check outside scope otherwise unexpected behaviour will happen
@@ -825,4 +825,153 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
             break;
         }
     }
+
+    //Bishop and Queen
+
+    //TOP RIGHT
+    for (int i = 1; i < 8; i++){
+        int testX = x - i;
+        int testY = y + i;
+        if(testY < 0 || testY > 7 || testX < 0 || testX > 7){
+            break;
+        }
+        
+        if (board[testX][testY] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[testX][testY] == L'♗' || board[testX][testY] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[testX][testY] == L'♝' || board[testX][testY] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+    //TOP LEFT
+    for (int i = 1; i < 8; i++){
+        int testX = x - i;
+        int testY = y - i;
+        if(testY < 0 || testY > 7 || testX < 0 || testX > 7){
+            break;
+        }
+        
+        if (board[testX][testY] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[testX][testY] == L'♗' || board[testX][testY] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[testX][testY] == L'♝' || board[testX][testY] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+    //BOTTOM RIGHT
+    for (int i = 1; i < 8; i++){
+        int testX = x + i;
+        int testY = y + i;
+        if(testY < 0 || testY > 7 || testX < 0 || testX > 7){
+            break;
+        }
+        
+        if (board[testX][testY] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[testX][testY] == L'♗' || board[testX][testY] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[testX][testY] == L'♝' || board[testX][testY] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+    //BOTTOM LEFT
+    for (int i = 1; i < 8; i++){
+        int testX = x + i;
+        int testY = y - i;
+        if(testY < 0 || testY > 7 || testX < 0 || testX > 7){
+            break;
+        }
+        
+        if (board[testX][testY] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[testX][testY] == L'♗' || board[testX][testY] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[testX][testY] == L'♝' || board[testX][testY] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+
+    //Pawns and Kings
+
+    //KING
+    int xPossibilities[8] = {0, -1, -1, -1, 0, 1, 1, 1};
+    int yPossibilities[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
+
+    for(int i = 0; i<8; i++){
+        int testX = x + xPossibilities[i];
+        int testY = y + yPossibilities[i];
+
+        if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
+            continue;
+        }
+
+        if(turnCounter % 2 == 0){
+            if(board[testX][testY] == L'♔'){
+                return 1;
+            }
+        }
+        else{
+            if(board[testX][testY] == L'♚'){
+                return 1;
+            }
+        }
+    }
+    //PAWN
+    if(turnCounter % 2 == 0){
+       int xPoss[2] = {-1, -1};
+       int yPoss[2] = {-1, 1};
+       
+       for(int i = 0; i<2; i++){
+        int testX = x + xPoss[i];
+        int testY = y + yPoss[i];
+
+        if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
+            continue;
+        }
+
+        if(board[testX][testY] == L'♙'){
+            return 1;
+        }
+        }
+    }
+    else{
+       int xPoss[2] = {1, 1};
+       int yPoss[2] = {-1, 1};
+       
+       for(int i = 0; i<2; i++){
+        int testX = x + xPoss[i];
+        int testY = y + yPoss[i];
+
+        if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
+            continue;
+        }
+
+        if(board[testX][testY] == L'♟'){
+            return 1;
+        }
+        }
+    }
+    return 0;
 }
