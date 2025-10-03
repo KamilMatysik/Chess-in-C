@@ -742,4 +742,87 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
         }
     }
 
+
+    //Rook and queen WORKING
+
+    //UP
+    for (int i = 1; i < 8; i++){
+        int testX = x - i;
+        if(testX < 0 || testX > 7){
+            break;
+        }
+        
+        if (board[testX][y] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[testX][y] == L'♖' || board[testX][y] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[testX][y] == L'♜' || board[testX][y] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+    //DOWN
+    for (int i = 1; i < 8; i++){
+        int testX = x + i;
+        if(testX < 0 || testX > 7){
+            break;
+        }
+        
+        if (board[testX][y] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[testX][y] == L'♖' || board[testX][y] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[testX][y] == L'♜' || board[testX][y] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+    //LEFT
+    for (int i = 1; i < 8; i++){
+        int testY = y - i;
+        if(testY < 0 || testY > 7){
+            break;
+        }
+        
+        if (board[x][testY] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[x][testY] == L'♖' || board[x][testY] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[x][testY] == L'♜' || board[x][testY] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
+    //RIGHT
+    for (int i = 1; i < 8; i++){
+        int testY = y + i;
+        if(testY < 0 || testY > 7){
+            break;
+        }
+        
+        if (board[x][testY] == L'-'){
+            continue;
+        } 
+        else if ((turnCounter % 2 == 0) && (board[x][testY] == L'♖' || board[x][testY] == L'♕')){
+            return 1;
+        }
+        else if ((turnCounter % 2 != 0) && (board[x][testY] == L'♜' || board[x][testY] == L'♛')){
+            return 1;
+        }
+        else{
+            break;
+        }
+    }
 }
