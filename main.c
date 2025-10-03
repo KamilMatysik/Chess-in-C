@@ -26,6 +26,7 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 void movePiecesToCastle(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 int checkForCheck(int x, int y, wchar_t board[8][8]);
 int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
@@ -38,6 +39,17 @@ int BRrook = 1;
 int whiteCastledThisTurn = 0;
 int blackCastledThisTurn = 0;
 
+wchar_t chessboard[8][8] = {
+        {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
+        {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
+        {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
+    };
+
 int main(void){
 
     /* Note: 0,0 is a8 on a normal board */
@@ -45,21 +57,13 @@ int main(void){
     /* This allows UNICODE to be used */
     setlocale(LC_ALL, "");
 
-    wchar_t chessboard[8][8] = {
-        {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
-        {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'♛', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
-        {L'♜', L'-', L'♝', L'-', L'♚', L'-', L'-', L'♜'}
-    };
+    
 
     displayBoard(chessboard);
 
     while(1){
         moveChoice(chessboard);
+        displayBoard(chessboard);
     }        
 
     return 0;
@@ -67,6 +71,7 @@ int main(void){
 
 void displayBoard(wchar_t board[8][8]){
     wchar_t lazyList[8] = {L'8', L'7', L'6', L'5', L'4', L'3', L'2', L'1'};
+    wprintf(L"\n\n\n\n\n");
     for (int i = 0; i < 8; i++){
         wprintf(L"%lc", lazyList[i]);
         for (int j=0; j < 8; j++){
@@ -166,6 +171,14 @@ int moveChoice(wchar_t board[8][8]){
 
         validMove = 1;
         turnCounter ++;
+        movePieces(fromX, fromY, toX, toY, board);
+
+        for(int i = 0; i<8;i++){
+            for(int j = 0; j<8;j++){
+                chessboard[i][j] = board[i][j];
+            }
+        }
+
     }
     
     return 1;
