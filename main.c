@@ -1,5 +1,5 @@
-//small things to implement at end: en pessant, cant castle with a rook if that rook has moves, even if it is back to its square(idk how to do this yet)
-
+//small things to implement at end: en pessant, promotion, universal check
+// delete all these at end - only for error testing   /*Test print*/wprintf(L"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +26,12 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
-int canCastle = 1;
+int whiteCanCastle = 1;
+int blackCanCastle = 1;
+int WLrook = 1;
+int WRrook = 1;
+int BLrook = 1;
+int BRrook = 1;
 
 int main(void){
 
@@ -43,7 +48,7 @@ int main(void){
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
-        {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
+        {L'♜', L'-', L'♝', L'-', L'♚', L'-', L'-', L'♜'}
     };
 
     displayBoard(chessboard);
@@ -146,7 +151,7 @@ int moveChoice(wchar_t board[8][8]){
         }
 
 
-        
+        //Check if king is in check after move choice first
 
         validMove = 1;
     }
@@ -592,42 +597,121 @@ int rookMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         }
     }
 
-    
+    //noting if a rook move so king cant castle with it
+    if(fromX == 7 && fromY == 0){
+        WLrook = 0;
+    }
+    else if(fromX == 7 && fromY == 7){
+        WRrook = 0;
+    }
+    else if(fromX == 0 && fromY == 0){
+        BLrook = 0;
+    }
+    else if(fromX == 0 && fromY == 7){
+        BRrook = 0;
+    }
+
+
     return 0;
 }
 
 int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if((abs(fromX - toX) > 1) || (abs(fromY - toY) >1)){
-        if(!canCastle){return 1;}
+        
         if(turnCounter % 2 == 0){
+
+            if(!whiteCanCastle){return 1;}
+
             //white castlable squares
             if(toX != 7){return 1;}
-            if(toY != 2 || toY != 6){return 1;}
+            if(toY != 2 && toY != 6){return 1;}
         }
         else if(turnCounter % 2 != 0){
+
+            if(!blackCanCastle){return 1;}
+
             //black castleable squares
             if(toX != 0){return 1;}
-            if(toY != 2 || toY != 6){return 1;}
+            if(toY != 2 && toY != 6){return 1;}
+        }
+        /*Need to check the rook he is castling with, and make sure it has not moved yet
+        Assign variable to each rook and make it false when it moves at all
+        Next index each square between king and rook (inclusive of king but not rook)
+        Use function to see if any of those squares are in check*/
+
+        //In each, use the function on the squares to see if they are in check
+        
+        //Must be castleing
+        if (toX == 7 && toY == 6){
+            //white short castle
+            if (board[7][6] != L'-' || board[7][5] != L'-'){
+                /*Test print*/wprintf(L"White short castle error\n");
+                return 1;
+            }
+            if (!WRrook){
+                return 1;
+            }
+        }
+        else if (toX == 7 && toY == 2){
+            //white long castle
+            if (board[7][1] != L'-' || board[7][2] != L'-' || board[7][3] != L'-'){
+                /*Test print*/wprintf(L"White long castle error\n");
+                return 1;
+            }
+            if (!WLrook){
+                return 1;
+            }
+        }
+        else if (toX == 0 && toY == 6){
+            //black short castle
+            if (board[0][6] != L'-' || board[0][5] != L'-'){
+                /*Test print*/wprintf(L"Black short castle error\n");
+                return 1;
+            }
+            if (!BRrook){
+                return 1;
+            }
+        }
+        else if (toX == 0 && toY == 2){
+            //black long castle
+            if (board[0][1] != L'-' || board[0][2] != L'-' || board[0][3] != L'-'){
+                /*Test print*/wprintf(L"Black long castle error\n");
+                return 1;
+            }
+            if (!BLrook){
+                return 1;
+            }
         }
         else{
-            //Must be castleing?
-            /*Need to check the rook he is castling with, and make sure it has not moved yet
-            Assign variable to each rook and make it false when it moves at all
-            Next index each square between king and rook (inclusive of king but not rook)
-            From each square check if there is a rook or queen above it
-            If there is a bishop or queen diagonal
-            Any piece in the row above each index(opposite color)
-            And finally for knights(you can hard code the squares for each castle as it would not change)
-            (for each of these other than rook, go square by square until the first piece, if it is anything other than ones that can check ,return safe)*/
-            
-
-
+            wprintf(L"BIG ERROR, THIS SHOULD NOT BE POSSIBLE\n");
         }
-        return 0;
+        
+    
+        
+        
+        
+        
+        if(turnCounter % 2 == 0){
+            whiteCanCastle = 0;
+        }
+        else{
+            blackCanCastle = 0;
+        }
+        
+        
     }
 
     
 
-    canCastle = 0;
+
     return 0;
+}
+
+int checkForCheck(int x, int y, wchar_t board[8][8]){
+
+    //Divide into section per piece
+    //Ensure not to check outside scope otherwise unexpected behaviour will happen
+
+    //IDEAS FOR STAYING IN SCOPE: 
+
 }
