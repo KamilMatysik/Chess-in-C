@@ -709,9 +709,37 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
 
 int checkForCheck(int x, int y, wchar_t board[8][8]){
 
+    //1 is check
+    //2 is not in check
+
     //Divide into section per piece
     //Ensure not to check outside scope otherwise unexpected behaviour will happen
 
-    //IDEAS FOR STAYING IN SCOPE: 
+    /* IDEAS FOR STAYING IN SCOPE: (do thise for knight, idk about rest) have 2 lists, a for loop iterates through them and they conatin the changes to be made to x or y
+    if the number produced is not between 0 and 8 for any of them then continue it until completion */
+
+    //Knight (WORKS)
+    int xPossibilities[8] = {-1, -2, -2, -1, 1, 2, 2, 1};
+    int yPossibilities[8] = {-2, -1, 1, 2, 2, 1, -1, -2};
+
+    for(int i = 0; i<8; i++){
+        int testX = x + xPossibilities[i];
+        int testY = y + yPossibilities[i];
+
+        if(testX < 0 || testY < 0 || testX > 7 || testY > 7){
+            continue;
+        }
+
+        if(turnCounter % 2 == 0){
+            if(board[testX][testY] == L'♘'){
+                return 1;
+            }
+        }
+        else{
+            if(board[testX][testY] == L'♞'){
+                return 1;
+            }
+        }
+    }
 
 }
