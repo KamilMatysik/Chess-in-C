@@ -1,7 +1,6 @@
 //small things to implement at end: en pessant, promotion, universal check ENPESSANT CHECK => IDK HOW
 // delete all these at end - only for error testing   /*Test print*/wprintf(L"
 
-//Castling is broken, have fun debugging future me :)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,6 +39,7 @@ int BLrook = 1;
 int BRrook = 1;
 int whiteCastledThisTurn = 0;
 int blackCastledThisTurn = 0;
+int testing = 0;
 
 wchar_t mainchessboard[8][8] = {
         {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
@@ -184,6 +184,7 @@ int moveChoice(wchar_t board[8][8]){
 
         validMove = 1;
         turnCounter ++;
+        wprintf(L"5");
         movePieces(fromX, fromY, toX, toY, board);
 
         for(int i = 0; i<8;i++){
@@ -684,7 +685,6 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         if (toX == 7 && toY == 6){
             //white short castle
             if (board[7][6] != L'-' || board[7][5] != L'-'){
-                /*Test print*/wprintf(L"White short castle error\n");
                 return 1;
             }
             if (!WRrook){
@@ -697,7 +697,6 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         else if (toX == 7 && toY == 2){
             //white long castle
             if (board[7][1] != L'-' || board[7][2] != L'-' || board[7][3] != L'-'){
-                /*Test print*/wprintf(L"White long castle error\n");
                 return 1;
             }
             if (!WLrook){
@@ -710,7 +709,6 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         else if (toX == 0 && toY == 6){
             //black short castle
             if (board[0][6] != L'-' || board[0][5] != L'-'){
-                /*Test print*/wprintf(L"Black short castle error\n");
                 return 1;
             }
             if (!BRrook){
@@ -723,7 +721,6 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         else if (toX == 0 && toY == 2){
             //black long castle
             if (board[0][1] != L'-' || board[0][2] != L'-' || board[0][3] != L'-'){
-                /*Test print*/wprintf(L"Black long castle error\n");
                 return 1;
             }
             if (!BLrook){
@@ -738,21 +735,21 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         }
         
         
-        
+        if(turnCounter % 2 == 0){
+            if(whiteCanCastle){
+                movePiecesToCastle(fromX, fromY, toX, toY, board);
+                whiteCanCastle = 0;
+            }
+        }
+        else{
+            if(blackCanCastle){
+                movePiecesToCastle(fromX, fromY, toX, toY, board);
+                blackCanCastle = 0;
+            }
+        }
     }
 
-    if(turnCounter % 2 == 0){
-        if(whiteCanCastle){
-            movePiecesToCastle(fromX, fromY, toX, toY, board);
-            whiteCanCastle = 0;
-        }
-    }
-    else{
-        if(blackCanCastle){
-            movePiecesToCastle(fromX, fromY, toX, toY, board);
-            blackCanCastle = 0;
-        }
-    }
+    
 
     return 0;
 }
@@ -1028,51 +1025,54 @@ int checkForCheck(int x, int y, wchar_t board[8][8]){
 
 void movePiecesToCastle(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if (toX == 7 && toY == 6){
-            //white short castle
-            board[7][6] = L'♚';
-            board[7][4] = L'-';
-            board[7][5] = L'♜';
-            board[7][7] = L'-';
-            whiteCastledThisTurn = 1;
-        }
-        else if (toX == 7 && toY == 2){
-            //white long castle
-            board[7][2] = L'♚';
-            board[7][4] = L'-';
-            board[7][3] = L'♜';
-            board[7][0] = L'-';
-            whiteCastledThisTurn = 1;
-        }
-        else if (toX == 0 && toY == 6){
-            //black short castle
-            board[0][6] = L'♔';
-            board[0][4] = L'-';
-            board[0][5] = L'♖';
-            board[0][7] = L'-';
-            blackCastledThisTurn = 1;
-        }
-        else if (toX == 0 && toY == 2){
-            //black long castle
-            board[0][2] = L'♔';
-            board[0][4] = L'-';
-            board[0][3] = L'♖';
-            board[0][0] = L'-';
-            blackCastledThisTurn = 1;
-        }
+        //white short castle
+        board[7][6] = L'♚';
+        board[7][4] = L'-';
+        board[7][5] = L'♜';
+        board[7][7] = L'-';
+        whiteCastledThisTurn = 1;
+    }
+    else if (toX == 7 && toY == 2){
+        //white long castle
+        board[7][2] = L'♚';
+        board[7][4] = L'-';
+        board[7][3] = L'♜';
+        board[7][0] = L'-';
+        whiteCastledThisTurn = 1;
+    }
+    else if (toX == 0 && toY == 6){
+        //black short castle
+        board[0][6] = L'♔';
+        board[0][4] = L'-';
+        board[0][5] = L'♖';
+        board[0][7] = L'-';
+        blackCastledThisTurn = 1;
+    }
+    else if (toX == 0 && toY == 2){
+        //black long castle
+        board[0][2] = L'♔';
+        board[0][4] = L'-';
+        board[0][3] = L'♖';
+        board[0][0] = L'-';
+        blackCastledThisTurn = 1;
+    }
 }
 
 void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
-    if (blackCastledThisTurn || whiteCastledThisTurn){
+    if ((blackCastledThisTurn || whiteCastledThisTurn) && !testing){
         blackCastledThisTurn = 0;
         whiteCastledThisTurn = 0;
+        wprintf(L"1");
     }
     else{
         wchar_t pieceToMove = board[fromX][fromY];
         board[toX][toY] = pieceToMove;
         board[fromX][fromY] = L'-';
+        wprintf(L"2");
     }
     return;
 }
+
 
 int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     wchar_t sbBoard[8][8];
@@ -1095,7 +1095,9 @@ int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             }
         }
     }
+    testing = 1;
     movePieces(fromX, fromY, toX, toY, sbBoard);
+    testing = 0;
     if (checkForCheck(kingX, kingY, sbBoard)){
         return 1;
     }
