@@ -1,6 +1,8 @@
 //small things to implement at end: en pessant, promotion, universal check ENPESSANT CHECK => IDK HOW
 // delete all these at end - only for error testing   /*Test print*/wprintf(L"
 
+//Castling is broken, have fun debugging future me :)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -39,7 +41,7 @@ int BRrook = 1;
 int whiteCastledThisTurn = 0;
 int blackCastledThisTurn = 0;
 
-wchar_t chessboard[8][8] = {
+wchar_t mainchessboard[8][8] = {
         {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
         {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
@@ -48,6 +50,17 @@ wchar_t chessboard[8][8] = {
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
         {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
+    };
+
+wchar_t chessboard[8][8] = {
+        {L'♖', L'-', L'-', L'-', L'♔', L'-', L'-', L'♖'},
+        {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
+        {L'♜', L'-', L'-', L'-', L'♚', L'-', L'-', L'♜'}
     };
 
 int main(void){
@@ -725,19 +738,21 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         }
         
         
-        if(turnCounter % 2 == 0){
-            whiteCanCastle = 0;
-        }
-        else{
-            blackCanCastle = 0;
-        }
-        
         
     }
 
-    /*Call function that physcially moves the pieces to castle the king, and change a variable (one for each side) that tells that a side has castled this turn, let the move
-    function check this variable, and if it is true then it makes no moves as one has been made, otherwise go on as normal*/
-    movePiecesToCastle(fromX, fromY, toX, toY, board);
+    if(turnCounter % 2 == 0){
+        if(whiteCanCastle){
+            movePiecesToCastle(fromX, fromY, toX, toY, board);
+            whiteCanCastle = 0;
+        }
+    }
+    else{
+        if(blackCanCastle){
+            movePiecesToCastle(fromX, fromY, toX, toY, board);
+            blackCanCastle = 0;
+        }
+    }
 
     return 0;
 }
@@ -1050,12 +1065,12 @@ void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if (blackCastledThisTurn || whiteCastledThisTurn){
         blackCastledThisTurn = 0;
         whiteCastledThisTurn = 0;
-        return;
     }
-
-    wchar_t pieceToMove = board[fromX][fromY];
-    board[toX][toY] = pieceToMove;
-    board[fromX][fromY] = L'-';
+    else{
+        wchar_t pieceToMove = board[fromX][fromY];
+        board[toX][toY] = pieceToMove;
+        board[fromX][fromY] = L'-';
+    }
     return;
 }
 
