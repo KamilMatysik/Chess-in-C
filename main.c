@@ -1,4 +1,4 @@
-//small things to implement at end: en pessant, promotion, ENPESSANT CHECK => IDK HOW
+//small things to implement at end: en pessant, stop king from moving INTO check
 
 
 #include <stdio.h>
@@ -28,6 +28,8 @@ int checkForCheck(int x, int y, wchar_t board[8][8]);
 int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 char promotion(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+void resign();
+void draw();
 
 
 int turnCounter = 0;
@@ -40,16 +42,17 @@ int BRrook = 1;
 int whiteCastledThisTurn = 0;
 int blackCastledThisTurn = 0;
 int testing = 0;
+int kingMoving = 0;
 
 wchar_t chessboard[8][8] = {
-        {L'♖', L'-', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
-        {L'♙', L'♟', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
+        {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
+        {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
+        {L'-', L'-', L'-', L'-', L'-', L'♖', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'♟', L'♙', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
-        {L'♜', L'-', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
+        {L'♟', L'♟', L'♟', L'♟', L'♟', L'-', L'♟', L'♟'},
+        {L'♜', L'♞', L'♝', L'♛', L'♚', L'-', L'♞', L'♜'}
     };
 
 
@@ -60,9 +63,10 @@ int main(void){
     /* This allows UNICODE to be used */
     setlocale(LC_ALL, "");
 
-    
 
     displayBoard(chessboard);
+    wprintf(L"DRAW to ask for a draw\n");
+    wprintf(L"RESIGN to resign\n");
 
     while(1){
         moveChoice(chessboard);
@@ -102,6 +106,22 @@ int moveChoice(wchar_t board[8][8]){
 
         moveFromA = toupper(moveFromA);
         moveToA = toupper(moveToA);
+        if (isalpha(moveFrom1)){
+            moveFrom1 = toupper(moveFrom1);
+        }
+        if (isalpha(moveTo1)){
+            moveTo1 = toupper(moveTo1);
+        }
+
+        //Checking for resignation
+        if (moveFromA == 'R' && moveFrom1 == 'E' && moveToA == 'S' && moveTo1 == 'I'){
+            resign();
+        }
+
+        //Asking for draw
+        if (moveFromA == 'D' && moveFrom1 == 'R' && moveToA == 'A' && moveTo1 == 'W'){
+            draw();
+        }
 
         /* Checking if move is valid before anything happens with the move choices */
 
@@ -780,7 +800,7 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     }
 
     
-
+    kingMoving = 1;
     return 0;
 }
 
@@ -1106,6 +1126,7 @@ int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     int kingX;
     int kingY;
     for (int i = 0; i < 8; i++){
+
         for (int j = 0; j < 8; j++){
             sbBoard[i][j] = board [i][j];
             if (turnCounter % 2 == 0){
@@ -1122,9 +1143,14 @@ int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             }
         }
     }
+    if(kingMoving){
+            kingX = toX;
+            kingY = toY;
+        }
     testing = 1;
     movePieces(fromX, fromY, toX, toY, sbBoard);
     testing = 0;
+    kingMoving = 0;
     if (checkForCheck(kingX, kingY, sbBoard)){
         return 1;
     }
@@ -1156,4 +1182,38 @@ char promotion(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
         } 
     }
     return choice;
+}
+
+void resign(){
+    if (turnCounter % 2 == 0){
+        wprintf(L"Black Wins!\n");
+    }
+    else{
+        wprintf(L"White Wins\n");
+    }
+    exit(0);
+}
+
+void draw(){
+    char response;
+    while (response != 'y' && response != 'n'){
+        if (turnCounter % 2 == 0){
+            wprintf(L"White has offered a draw. Black, do you accept? (Y/N): ");
+            scanf(" %c", &response);
+        }
+        else{
+            wprintf(L"Black has offered a draw. White, do you accept? (Y/N): ");
+            scanf(" %c", &response);
+        }
+        response = tolower(response);
+    }
+    if (response == 'y'){
+        wprintf(L"Game ends in a draw.\n");
+        exit(0);
+    }
+    else{
+        wprintf(L"Draw not accepted\n");
+        return;
+    }
+
 }
