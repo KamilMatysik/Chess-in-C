@@ -1,5 +1,4 @@
-//small things to implement at end: en pessant, promotion, universal check ENPESSANT CHECK => IDK HOW
-// delete all these at end - only for error testing   /*Test print*/wprintf(L"
+//small things to implement at end: en pessant, promotion, ENPESSANT CHECK => IDK HOW
 
 
 #include <stdio.h>
@@ -28,6 +27,7 @@ void movePiecesToCastle(int fromX, int fromY, int toX, int toY, wchar_t board[8]
 int checkForCheck(int x, int y, wchar_t board[8][8]);
 int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
+char promotion(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]);
 
 
 int turnCounter = 0;
@@ -41,27 +41,17 @@ int whiteCastledThisTurn = 0;
 int blackCastledThisTurn = 0;
 int testing = 0;
 
-wchar_t mainchessboard[8][8] = {
-        {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
-        {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
+wchar_t chessboard[8][8] = {
+        {L'♖', L'-', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
+        {L'♙', L'♟', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
-        {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
+        {L'♟', L'♙', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
+        {L'♜', L'-', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
     };
 
-wchar_t chessboard[8][8] = {
-        {L'♖', L'-', L'-', L'-', L'♔', L'-', L'-', L'♖'},
-        {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
-        {L'♜', L'-', L'-', L'-', L'♚', L'-', L'-', L'♜'}
-    };
 
 int main(void){
 
@@ -106,7 +96,7 @@ int moveChoice(wchar_t board[8][8]){
             scanf(" %c %c %c %c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
         }
         else{
-            wprintf(L"Black Choose A Move (e.g A2 A3): ");
+            wprintf(L"Black Choose A Move (e.g A7 A6): ");
             scanf(" %c %c %c %c", &moveFromA,&moveFrom1,&moveToA,&moveTo1);
         }
 
@@ -183,9 +173,49 @@ int moveChoice(wchar_t board[8][8]){
         }
 
         validMove = 1;
-        turnCounter ++;
-        wprintf(L"5");
         movePieces(fromX, fromY, toX, toY, board);
+        char promPiece;
+        promPiece = promotion(fromX, fromY, toX, toY, board);
+        if(promPiece != 'x'){
+            if (turnCounter % 2 == 0){    
+                switch (promPiece)
+                {
+                case 'q':
+                    board[toX][toY] = L'♛';
+                    break;
+                case 'r':
+                    board[toX][toY] = L'♜';
+                    break;
+                case 'k':
+                    board[toX][toY] = L'♞';
+                    break;
+                default:
+                    board[toX][toY] = L'♝';
+                    break;
+                }
+            }
+            else{
+                switch (promPiece)
+                {
+                case 'q':
+                    board[toX][toY] = L'♕';
+                    break;
+                case 'r':
+                    board[toX][toY] = L'♖';
+                    break;
+                case 'k':
+                    board[toX][toY] = L'♘';
+                    break;
+                default:
+                    board[toX][toY] = L'♗';
+                    break;
+                }
+            }
+        }
+
+        turnCounter ++;
+
+
 
         for(int i = 0; i<8;i++){
             for(int j = 0; j<8;j++){
@@ -1062,17 +1092,14 @@ void movePieces(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     if ((blackCastledThisTurn || whiteCastledThisTurn) && !testing){
         blackCastledThisTurn = 0;
         whiteCastledThisTurn = 0;
-        wprintf(L"1");
     }
     else{
         wchar_t pieceToMove = board[fromX][fromY];
         board[toX][toY] = pieceToMove;
         board[fromX][fromY] = L'-';
-        wprintf(L"2");
     }
     return;
 }
-
 
 int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     wchar_t sbBoard[8][8];
@@ -1104,4 +1131,29 @@ int checkAfterMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     else{
         return 0;
     }
+}
+
+char promotion(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
+    char choice = 'x';
+    if (turnCounter % 2 == 0){
+        if ((board[toX][toY] == L'♟') && (toX == 0)){
+            while(choice != 'q' && choice != 'r' && choice != 'b' && choice != 'k'){
+                wprintf(L"White, Choose a piece to promote to (Q, R, B, K): ");
+                scanf(" %c", &choice);
+
+                choice = tolower(choice);
+            }
+        }
+    }
+    else{
+       if ((board[toX][toY] == L'♙') && (toX == 7)){
+            while(choice != 'q' && choice != 'r' && choice != 'b' && choice != 'k'){
+                wprintf(L"Black, Choose a piece to promote to (Q, R, B, K): ");
+                scanf(" %c", &choice);
+
+                choice = tolower(choice);
+            }
+        } 
+    }
+    return choice;
 }
