@@ -1,4 +1,4 @@
-//small things to implement at end: en pessant, stop king from moving INTO check
+//small things to implement at end: en pessant
 
 
 #include <stdio.h>
@@ -43,16 +43,20 @@ int whiteCastledThisTurn = 0;
 int blackCastledThisTurn = 0;
 int testing = 0;
 int kingMoving = 0;
+int enPassantWhiteX = 9;
+int enPassantWhiteY = 9;
+int enPassantBlackX = 9;
+int enPassantBlackY = 9;
 
 wchar_t chessboard[8][8] = {
         {L'♖', L'♘', L'♗', L'♕', L'♔', L'♗', L'♘', L'♖'},
         {L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙', L'♙'},
-        {L'-', L'-', L'-', L'-', L'-', L'♖', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
+        {L'-', L'-', L'♟', L'-', L'-', L'-', L'-', L'-'},
         {L'-', L'-', L'-', L'-', L'-', L'-', L'-', L'-'},
-        {L'♟', L'♟', L'♟', L'♟', L'♟', L'-', L'♟', L'♟'},
-        {L'♜', L'♞', L'♝', L'♛', L'♚', L'-', L'♞', L'♜'}
+        {L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟', L'♟'},
+        {L'♜', L'♞', L'♝', L'♛', L'♚', L'♝', L'♞', L'♜'}
     };
 
 
@@ -93,6 +97,18 @@ void displayBoard(wchar_t board[8][8]){
 int moveChoice(wchar_t board[8][8]){
     char moveFromA, moveFrom1, moveToA, moveTo1;
     int validMove = 0;
+
+    //Resetting en passant values to unimportant value
+    if (turnCounter % 2 == 0){
+        enPassantWhiteX = 9;
+        enPassantWhiteY = 9;
+    }
+    else{
+        enPassantBlackX = 9;
+        enPassantBlackY = 9;
+    }
+    
+    
 
     while (!validMove){
         if (turnCounter % 2==0){
@@ -416,7 +432,7 @@ int ifMoveDoable(char piece, int fromX, int fromY, int toX, int toY, wchar_t boa
     }
 }
 
-//Working
+//Working (- en pessant)
 int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
     int doubleJump = 1;
 
@@ -432,6 +448,8 @@ int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             }
             else if(doubleJump && fromX - 2 == toX){  // Double jump
                 if(board[fromX - 1][toY] != '-' || board[toX][toY] != '-') return 1;
+                enPassantWhiteX = toX;
+                enPassantWhiteY = toY;
                 return 0;
             }
             else{
@@ -442,7 +460,16 @@ int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             // Diagonal
             if((fromX - 1 == toX) && (fromY - 1 == toY || fromY + 1 == toY)){
                 if(board[toX][toY] != '-') return 0; // Can capture
-                else return 1; // Cannot move diagonally to empty square
+                else{
+                    if(toX +1 == enPassantBlackX){
+                        board[enPassantBlackX][enPassantBlackY] = L'-';
+                        return 0;
+                    }
+                    else{
+                        return 1; // Cannot move diagonally to empty square
+                    }
+                    
+                } 
             }
             else{
                 return 1;
@@ -461,6 +488,8 @@ int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             }
             else if(doubleJump && fromX + 2 == toX){  // Double jump
                 if(board[fromX + 1][toY] != '-' || board[toX][toY] != '-') return 1;
+                enPassantBlackX = toX;
+                enPassantBlackY = toY;
                 return 0;
             }
             else{
@@ -471,13 +500,22 @@ int pawnMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             // Diagonal 
             if((fromX + 1 == toX) && (fromY - 1 == toY || fromY + 1 == toY)){
                 if(board[toX][toY] != '-') return 0; // Can capture
-                else return 1; // Cannot move diagonally to empty square
+                else{
+                    if(toX -1 == enPassantWhiteX){
+                        board[enPassantWhiteX][enPassantWhiteY] = L'-';
+                        return 0;
+                    }
+                    else{
+                        return 1; // Cannot move diagonally to empty square
+                    }
+                } 
             }
             else{
                 return 1;
             }
         }
     }
+
 
     return 1;
 }
@@ -724,10 +762,6 @@ int kingMove(int fromX, int fromY, int toX, int toY, wchar_t board[8][8]){
             if(toX != 0){return 1;}
             if(toY != 2 && toY != 6){return 1;}
         }
-        /*Need to check the rook he is castling with, and make sure it has not moved yet
-        Assign variable to each rook and make it false when it moves at all
-        Next index each square between king and rook (inclusive of king but not rook)
-        Use function to see if any of those squares are in check*/
 
         //In each, use the function on the squares to see if they are in check
         
